@@ -210,26 +210,56 @@ public class ProductController {
 //		out.write(jsons.toString());
 //		out.flush();
 //		out.close();
-		String str = "abcd";
-		InputStream in = new FileInputStream("C:\\Users\\HANS\\Desktop\\data12.json");
-		OutputStream out  = new GZIPOutputStream(response.getOutputStream());
-		byte[] buffer = new byte[10240];
-		
-		while(true) {
-			int count = in.read(buffer);
-
-			if(count == -1) {
-				break;
-			}
-//			System.out.println(str.getBytes());
-			System.out.println(String.valueOf(count).getBytes());
-			out.write(buffer);
-		}
 		response.setHeader("Content-Encoding","gzip");
-		in.close();
-		out.flush();
-		out.close();
-		out = null;
+		response.setHeader("Content-Type","application/json");
+
+		InputStream input = null ;
+		OutputStream output  =null ;
+
+		try {
+		int readCount = 0 ;
+		input =  new FileInputStream("C:\\Users\\HANS\\Desktop\\dm.json"); 
+		output  = new GZIPOutputStream(response.getOutputStream());
+		byte[] buffer = new byte[1024]; 
+			while ((readCount = input.read(buffer)) != -1) {
+				 
+				output.write(buffer,0,readCount);
+			}
+			
+		} catch(Exception e){}
+		finally{ 
+			
+			
+			if( input != null ){
+				input.close();
+				input = null ;
+			}
+			if( output != null ){
+				output.flush();
+				output.close();
+				output = null ;
+			}
+		}
+//		String str = "abcd";
+//		InputStream in = new FileInputStream("C:\\Users\\HANS\\Desktop\\dm.json");
+//		OutputStream out  = new GZIPOutputStream(response.getOutputStream());
+//		byte[] buffer = new byte[1024];
+//		
+//		while(true) {
+//			int count = in.read(buffer);
+//
+//			if(count == -1) {
+//				break;
+//			}
+////			System.out.println(str.getBytes());
+//			System.out.println(String.valueOf(count).getBytes());
+//			out.write(buffer);
+//		}
+//		response.setHeader("Content-Encoding","gzip");
+//		in.close();
+//		out.flush();
+//		out.close();
+//		out = null;
 	}
 //	@PostMapping("/kobong.do")
 //	public String test(Connection conn, HttpServletRequest request, HttpServletResponse response, RequestData requestData) throws IOException {

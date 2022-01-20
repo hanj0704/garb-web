@@ -159,4 +159,10 @@ public class TestController {
 		return new JSONDataView();
 	}
 	
+	@RequestMapping("jsn.do")
+	public void testJson(HttpServletRequest req, HttpServletResponse res, DataRequest dat) throws Exception {
+		
+		System.out.println(dat.getRequestObject());
+		
+	}
 }

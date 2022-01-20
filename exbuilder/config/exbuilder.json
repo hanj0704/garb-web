@@ -11,7 +11,8 @@
     "dateformat": "yyyyMMddHHmmss"
   },
   "deploy-path": [
-    "/"
+    "/",
+    "/st"
   ],
   "page-loading-image": {
     "height": 150.0,

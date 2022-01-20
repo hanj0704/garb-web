@@ -25,15 +25,15 @@ public class SimpleCORSFilter implements Filter{
 	            throws IOException, ServletException {
 		
 	        HttpServletRequest request = (HttpServletRequest) servletRequest;
-	        Cookie[] cookiebongji = request.getCookies();
-	        if(cookiebongji != null && cookiebongji.length > 0) {
-	        	for(Cookie cook : cookiebongji) {
-	        		
-	        		System.out.println(cook);
-	        		System.out.println(cook.getValue());
-	        		System.out.println(cook.getPath());
-	        	}
-	        }
+//	        Cookie[] cookiebongji = request.getCookies();
+//	        if(cookiebongji != null && cookiebongji.length > 0) {
+//	        	for(Cookie cook : cookiebongji) {
+//	        		
+//	        		System.out.println(cook);
+//	        		System.out.println(cook.getValue());
+//	        		System.out.println(cook.getPath());
+//	        	}
+//	        }
 	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
 	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
 	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");

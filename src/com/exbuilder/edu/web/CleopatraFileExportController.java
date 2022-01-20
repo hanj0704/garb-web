@@ -29,6 +29,7 @@ import com.cleopatra.protocol.data.DataRequest;
 
 
 @Controller
+@RequestMapping("/export")
 public class CleopatraFileExportController {
 
 	
