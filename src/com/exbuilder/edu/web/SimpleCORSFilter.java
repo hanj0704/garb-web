@@ -34,9 +34,10 @@ public class SimpleCORSFilter implements Filter{
 //	        		System.out.println(cook.getPath());
 //	        	}
 //	        }
-	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
-	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST");
-	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+//	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Origin", "*");
+//	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Methods","GET, OPTIONS, HEAD, PUT, POST, DELETE");
+//	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+//	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Expose-Headers", "Content-Disposition");
 //	        ((HttpServletResponse) servletResponse).addHeader("Access-Control-Allow-Credentials", "true");
 	        HttpServletResponse resp = (HttpServletResponse) servletResponse;
 	        if (request.getMethod().equals("OPTIONS")) {

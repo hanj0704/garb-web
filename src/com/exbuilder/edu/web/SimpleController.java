@@ -25,6 +25,7 @@ import org.springframework.web.servlet.View;
 import com.cleopatra.protocol.data.DataRequest;
 import com.cleopatra.protocol.data.ParameterGroup;
 import com.cleopatra.spring.JSONDataView;
+import com.cleopatra.spring.TSVDataView;
 import com.cleopatra.spring.UIView;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,21 +46,16 @@ public class SimpleController {
 		
 		return new UIView("/202102/tester.clx");
 	}
-	@CrossOrigin
-	@RequestMapping("/massList.do")
-	public View masslist(HttpServletRequest request, HttpServletResponse response, DataRequest datareq)throws IOException {
-		
-//		response.setHeader("Access-Control-Allow-Headers", "*");
-//		response.setHeader("Access_control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-//		response.setHeader("Access-Control-Max-Age", "3600");
-//		response.setHeader("Access-Control-Allow-Origin", "*");
+	
+	@RequestMapping("testMass.do")
+	public void massTestList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		Random random = new Random();
 		SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");
 		SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
 		Date date = new Date();
 		List<Map<String, Object>> listData = new ArrayList<Map<String, Object>>();
-		for(int i = 0; i < 15; i++) {
+		for(int i = 0; i < 5000; i++) {
 			Map<String, Object> rowData = new HashMap<String, Object>();
 			
 			int idx = (int)Math.ceil(i / 6);
@@ -77,19 +73,84 @@ public class SimpleController {
 			rowData.put("column11", dayFormat.format(date));
 			rowData.put("column12", hourFormat.format(date));
 			rowData.put("column13", "상세정보상세정보상세정보");
-			rowData.put("column14", dayFormat.format(date));
-			rowData.put("column15", hourFormat.format(date));
-			rowData.put("column16", "상세정보상세정보상세정보");
-			rowData.put("column17", dayFormat.format(date));
-			rowData.put("column18", "Y");
-			rowData.put("column19", "N");
-			rowData.put("column20", "비고비고비고비고비고비고비고비고비고");
+//			rowData.put("column14", dayFormat.format(date));
+//			rowData.put("column15", hourFormat.format(date));
+//			rowData.put("column16", "상세정보상세정보상세정보");
+//			rowData.put("column17", dayFormat.format(date));
+//			rowData.put("column18", "Y");
+//			rowData.put("column19", "N");
+//			rowData.put("column20", "비고비고비고비고비고비고비고비고비고");
 			
 			listData.add(rowData);
 		}
 		
-		datareq.setResponse("mainDS", listData);
+//		try{
+//			response.setContentLength(jsonob.toJSONString().getBytes().length);
+//			out = response.getOutputStream();
+//			out.write(jsonob.toJSONString().getBytes());
+//			
+//		}catch (Exception e) {
+//			// TODO: handle exception
+//			e.printStackTrace();
+//		}finally {
+//			if(out != null){
+//				
+//				out.flush();
+//				out.close();
+//				out= null;
+//			}
+//		}
+	}
+	
+	@CrossOrigin
+	@RequestMapping("/massList.do")
+	public View masslist(HttpServletRequest request, HttpServletResponse response, DataRequest datareq)throws IOException {
 		
+//		response.setHeader("Access-Control-Allow-Headers", "*");
+//		response.setHeader("Access_control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+//		response.setHeader("Access-Control-Max-Age", "3600");
+//		response.setHeader("Access-Control-Allow-Origin", "*");
+		
+		Random random = new Random();
+		SimpleDateFormat dayFormat = new SimpleDateFormat("yyyyMMdd");
+		SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
+		Date date = new Date();
+		List<Map<String, Object>> listData = new ArrayList<Map<String, Object>>();
+		for(int i = 0; i < 5000; i++) {
+			Map<String, Object> rowData = new HashMap<String, Object>();
+			
+			int idx = (int)Math.ceil(i / 6);
+			rowData.put("column1", "대구분-" + idx);
+			rowData.put("column2", "중구분-" + idx);
+			rowData.put("column3", "소구분-" + idx);
+			rowData.put("column4", "세구분-" + idx);
+			rowData.put("column5", "상세정보상세정보상세정보상세정보상세정보상세정보상세정보상세정보");
+			
+			rowData.put("column6", random.nextInt());
+			rowData.put("column7", random.nextInt());
+			rowData.put("column8", random.nextInt());
+			rowData.put("column9", random.nextInt());
+			rowData.put("column10", random.nextInt());
+			rowData.put("column11", dayFormat.format(date));
+			rowData.put("column12", hourFormat.format(date));
+			rowData.put("column13", "상세정보상세정보상세정보");
+//			rowData.put("column14", dayFormat.format(date));
+//			rowData.put("column15", hourFormat.format(date));
+//			rowData.put("column16", "상세정보상세정보상세정보");
+//			rowData.put("column17", dayFormat.format(date));
+//			rowData.put("column18", "Y");
+//			rowData.put("column19", "N");
+//			rowData.put("column20", "비고비고비고비고비고비고비고비고비고");
+			
+			listData.add(rowData);
+		}
+//		byte[] bytes = listData.toString().getBytes();
+//		System.out.println(bytes.length);
+//		System.out.println(datareq.getResponse().toString().length());
+//		response.setContentLength(bytes.length);
+//		response.setHeader("Content-Length", String.valueOf(listData.toString().length()));
+		response.setHeader("Content-Encoding","gzip");
+		datareq.setResponse("mainDS", listData);
 		return new JSONDataView();
 	}
 	
@@ -103,19 +164,21 @@ public class SimpleController {
 			strCnt = "10000" ;
 		}
 		limits = Integer.parseInt(strCnt);
-		response.setHeader("Content-Encoding","gzip");
-		response.setHeader("Content-Type","application/json");
+//		response.setHeader("Content-Encoding","gzip");
+//		response.setHeader("Content-Type","application/json");
 
 		Random random = new Random();  
  
 //		OutputStream output  = response.getOutputStream() ;
 		OutputStream output = null;
- 
+		StringBuffer fullBuffer = new StringBuffer();
 		try {  
 			output  = new GZIPOutputStream(response.getOutputStream()); 
 			
 			StringBuffer rowData = new StringBuffer();
 			output.write(rowData.append("{\"dsList\":[").toString().getBytes());
+//			response.setContentLength(rowData.toString().getBytes().length);
+			
 			for(int i = 0; i < limits; i++) {
 				rowData = new StringBuffer() ;
 				int idx = (int)Math.ceil(i / 6);
@@ -328,16 +391,20 @@ public class SimpleController {
 				    rowData.append("}"); 
 				else
 				    rowData.append("},"); 
+				
+				fullBuffer.append(rowData.toString());
 				output.write(rowData.toString().getBytes()); 
 			}
-
 			 rowData = new StringBuffer();
 			output.write(rowData.append("]}").toString().getBytes());
+			fullBuffer.append(rowData.toString());
 		} catch(Exception e){
 			e.printStackTrace();
 		}
 		finally{  
 			 
+			System.out.println(fullBuffer.toString().getBytes().length);
+			response.setContentLength(fullBuffer.toString().getBytes().length+11);
 			if( output != null ){
 				output.flush();
 				output.close();

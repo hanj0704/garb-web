@@ -69,6 +69,25 @@ public class TreeDataParseController {
 			tempObj.put("label", "label"+i);
 			tempObj.put("value", "value"+i);
 			tempObj.put("parent", "");
+			tempObj.put("column1", "column1"+i);
+			tempObj.put("column2", "column2"+i);
+			tempObj.put("column3", "column3"+i);
+			tempObj.put("column4", "column4"+i);
+			tempObj.put("column5", "column5"+i);
+			tempObj.put("column6", "column6"+i);
+			tempObj.put("column7", "column7"+i);
+			tempObj.put("column8", "column8"+i);
+			tempObj.put("column9", "column9"+i);
+			tempObj.put("column10", "column10"+i);
+			tempObj.put("column11", "column11"+i);
+			tempObj.put("column12", "column12"+i);
+			tempObj.put("column13", "column13"+i);
+			tempObj.put("column14", "column14"+i);
+			tempObj.put("column15", "column15"+i);
+			tempObj.put("column16", "column16"+i);
+			tempObj.put("column17", "column17"+i);
+			tempObj.put("column18", "column18"+i);
+			tempObj.put("column19", "column19"+i);
 			
 			if(numRandom == 1 && i != 0) {
 				
