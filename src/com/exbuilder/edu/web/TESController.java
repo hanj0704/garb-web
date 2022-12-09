@@ -1,17 +1,38 @@
 package com.exbuilder.edu.web;
 
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
 
+import org.apache.pdfbox.*;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.PDFontSetting;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.tools.PDFText2HTML;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -33,7 +54,61 @@ public class TESController {
 		
 	}
 	
-
+	
+	@RequestMapping("/pdf.do")
+	public void getPDF(HttpServletRequest request, HttpServletResponse response, DataRequest datareq) throws IOException {
+//		pp.parse(arg0)
+		Map<String, UploadFile[]> uploadFiles = datareq.getUploadFiles();
+		
+		Set<Entry<String,UploadFile[]>> entrySet = uploadFiles.entrySet();
+		
+		UploadFile[] uploadFiles2 = uploadFiles.get("file1");
+		UploadFile[] uploadFiles3 = uploadFiles.get("file2");
+		File file1 = uploadFiles2[0].getFile();
+		File file2 = uploadFiles3[0].getFile();
+		System.out.println(file1);
+		System.out.println(file2);
+		
+		request.setCharacterEncoding("text/html; charset=UTF-8");
+		InputStreamReader input = new InputStreamReader(new FileInputStream(file1),"euc-kr");
+	
+//		for(Entry<String,UploadFile[]> entrys : entrySet) {
+//			
+//			UploadFile[] fileA = entrys.getValue();
+//		
+//			for(UploadFile file : fileA) {
+//				File oldFile = file.getFile();
+//				
+//				System.out.println(oldFile);
+				PDDocument document =null;
+				try{
+					BufferedReader buf = new BufferedReader(input);
+					OutputStream out = response.getOutputStream();
+					document = Loader.loadPDF(file1);
+//					PDPageTree pages = document.getPages();
+					PDFTextStripper strip = new PDFTextStripper();
+					PDFText2HTML htm = new PDFText2HTML();
+					PDType0Font font = PDType0Font.load(document, file2);
+					String text2 = htm.getText(document);
+					String text = strip.getText(document);
+				
+					System.out.println(text2);
+//					for(int idx=0; idx < pages.getCount();idx++) {
+//						PDPage pdPage = pages.get(idx);
+//						InputStream contents = pdPage.getContents();
+//						System.out.println(contents.read());
+//					}
+				}catch (Exception e) {
+					// TODO: handle exception
+				} finally {
+					if(document != null) {
+						document.close();
+					}
+				}
+//			}
+//		}
+	}
+	
 	@RequestMapping("/list.do")
 	public void getList(HttpServletRequest request, HttpServletResponse response, DataRequest datareq)throws IOException, ParseException {
 		
