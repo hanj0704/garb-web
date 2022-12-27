@@ -1,31 +1,49 @@
 package com.exbuilder.edu.web;
 
+import java.awt.image.BufferedImage;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.plaf.synth.SynthSplitPaneUI;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.pdfbox.*;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDFontFactory;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDFontSetting;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.tools.PDFText2HTML;
 import org.json.simple.JSONObject;
@@ -53,8 +71,89 @@ public class TESController {
 	public TESController(){
 		
 	}
-	
-	
+	public String getS (String param){
+		
+		return "";
+	}
+	@RequestMapping("/pdfhtml.do")
+	public void getHtml(HttpServletRequest request, HttpServletResponse response, DataRequest req) throws IOException {
+		Map<String,UploadFile[]> uploadFiles = req.getUploadFiles();
+		UploadFile[] uploadFiles2 = uploadFiles.get("file1");
+		File file1 = uploadFiles2[0].getFile();
+		PDDocument document = null;
+		try {
+			document = Loader.loadPDF(file1);
+			PDFText2HTML html = new PDFText2HTML();
+//			String string = html.getTextMatrix().toString();
+//			System.out.println(string);
+			PDPageTree pages = Loader.loadPDF(file1).getPages();
+			PDPage pdPage = pages.get(1);
+			String text2 = html.getText(document);
+			PDResources resources = html.getCurrentPage().getResources();
+			Iterable<COSName> xObjectNames = resources.getXObjectNames();
+			for (COSName cosName : xObjectNames) {
+				PDXObject xObject = resources.getXObject(cosName);
+				if(xObject instanceof PDImageXObject) {
+					BufferedImage bImage = ((PDImageXObject) xObject).getImage();
+					System.out.println(bImage);
+				}
+			}
+//			PDResources resources2 = document.getPage(5).getResources();
+//			Iterable<COSName> xObjectNames = resources2.getXObjectNames();
+//			for (COSName cosName : xObjectNames) {
+//				System.out.println(cosName);
+//				PDXObject xObject = resources2.getXObject(cosName);
+//				COSStream cosObject = xObject.getCOSObject();
+//				cosObject.
+//			}
+//			resources.get
+//			Pattern pat = Pattern.compile("&#[0-9]+;");
+//			Matcher mat = pat.matcher(text2);
+//			while(mat.find()) {
+//				String finder = mat.group();
+//				String group = finder.replaceAll("[&#;]", "");
+//				String hexString = "\\u"+Integer.toHexString(Integer.parseInt(group));
+//				String lol = StringEscapeUtils.unescapeJava(hexString);
+//				text2 = text2.replaceFirst(finder,lol);
+//			}
+//			downloadPDF(request, response, text2);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}finally {
+		}
+	}
+	public void downloadPDF(HttpServletRequest request,HttpServletResponse response, String str) {
+		File saveFile = new File("test.html");
+		FileWriterWithEncoding writer = null;
+		try{
+			writer = new FileWriterWithEncoding(saveFile, "UTF-8");
+			writer.write(str);
+			writer.flush();
+			
+			response.setContentType("application/octet-stream");
+			String fileName = new String(saveFile.getName().getBytes("utf-8"),"iso-8859-1");
+			response.setHeader("Content-Disposition", "attachment;filename=\""+fileName+"\";");
+			
+			FileInputStream fis = new FileInputStream(saveFile);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+			ServletOutputStream so = response.getOutputStream();
+			BufferedOutputStream bos = new BufferedOutputStream(so);
+			
+			byte[] data = new byte[2048];
+			int input = 0;
+			while((input=bis.read(data))!= -1) {
+				bos.write(data,0,input);
+				bos.flush();
+			}
+			if(bos != null) bos.close();
+			if(so != null) so.close();
+			if(bis != null) bis.close();
+			if(fis != null) fis.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}finally {
+		}
+	}
 	@RequestMapping("/pdf.do")
 	public void getPDF(HttpServletRequest request, HttpServletResponse response, DataRequest datareq) throws IOException {
 //		pp.parse(arg0)
@@ -69,7 +168,7 @@ public class TESController {
 		System.out.println(file1);
 		System.out.println(file2);
 		
-		request.setCharacterEncoding("text/html; charset=UTF-8");
+//		request.setCharacterEncoding("text/html;charset=UTF-8");
 		InputStreamReader input = new InputStreamReader(new FileInputStream(file1),"euc-kr");
 	
 //		for(Entry<String,UploadFile[]> entrys : entrySet) {
@@ -80,9 +179,12 @@ public class TESController {
 //				File oldFile = file.getFile();
 //				
 //				System.out.println(oldFile);
+				File writer = new File("file.html");
+//				writer.
 				PDDocument document =null;
 				try{
 					BufferedReader buf = new BufferedReader(input);
+					
 					OutputStream out = response.getOutputStream();
 					document = Loader.loadPDF(file1);
 //					PDPageTree pages = document.getPages();
@@ -93,6 +195,7 @@ public class TESController {
 					String text = strip.getText(document);
 				
 					System.out.println(text2);
+//					text2.code
 //					for(int idx=0; idx < pages.getCount();idx++) {
 //						PDPage pdPage = pages.get(idx);
 //						InputStream contents = pdPage.getContents();
