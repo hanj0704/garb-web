@@ -24,6 +24,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +41,7 @@ import com.exbuilder.edu.dto.HanVO;
 import com.exbuilder.edu.dto.MainVO;
 import com.exbuilder.edu.dto.SampleVO;
 import com.exbuilder.edu.dto.TestVO;
+import com.exbuilder.edu.dto.TesterVO;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -122,17 +124,15 @@ public class TestController {
 	}
 
 	// @RequestBody Map<String,Object> param
-	@ResponseBody
-	@RequestMapping(value = "/tes.do", method = RequestMethod.POST)
-	public View testTes(@RequestBody List<TestVO> param, HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		for (String name : df.getBeanDefinitionNames()) {
-
-			System.out.println(name + "\t" + df.getBean(name).getClass().getName());
-		}
-		System.out.println(param);
+	@RequestMapping("/tes.do")
+	public View testTes(@RequestBody List<TestVO> list)throws Exception {
+//		for (String name : df.getBeanDefinitionNames()) {
+//
+//			System.out.println(name + "\t" + df.getBean(name).getClass().getName());
+//		}
+		System.out.println(list);
 		
-		param.forEach(new Consumer<TestVO>() {
+		list.forEach(new Consumer<TestVO>() {
 			@Override
 			public void accept(TestVO t) {
 				// TODO Auto-generated method stub
@@ -162,6 +162,14 @@ public class TestController {
 		// }
 		// });
 		return new JSONDataView();
+	}
+	
+	@PostMapping("/tes2.do")
+	public void testList(@RequestBody TesterVO param)throws Exception{
+		
+		List<TesterVO> list = param.getList();
+		TesterVO tv = list.get(0);
+		System.out.println(tv.getColumn1());
 	}
 
 	@RequestMapping("jsn.do")

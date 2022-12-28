@@ -116,7 +116,7 @@ public class SimpleController {
 		SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm:ss");
 		Date date = new Date();
 		List<Map<String, Object>> listData = new ArrayList<Map<String, Object>>();
-		for(int i = 0; i < 5000; i++) {
+		for(int i = 0; i < 1; i++) {
 			Map<String, Object> rowData = new HashMap<String, Object>();
 			
 			int idx = (int)Math.ceil(i / 6);
