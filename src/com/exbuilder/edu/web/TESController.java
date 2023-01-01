@@ -15,14 +15,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Set;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,23 +53,27 @@ import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.tools.PDFText2HTML;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
-import com.cleopatra.json.JSONArray;
 import com.cleopatra.protocol.data.DataRequest;
 import com.cleopatra.protocol.data.ParameterGroup;
 import com.cleopatra.protocol.data.UploadFile;
 import com.cleopatra.spring.JSONDataView;
 import com.cleopatra.spring.UIView;
+import com.exbuilder.edu.dto.TestVO;
 
 @Controller
 @RequestMapping("/tes")
@@ -74,6 +85,95 @@ public class TESController {
 	public String getS (String param){
 		
 		return "";
+	}
+	@RequestMapping(value="/mci.do")
+	public void getMci(HttpServletRequest request, HttpServletResponse response,
+			@RequestBody Map<String,Object> parameter
+//			DataRequest datareq
+			) throws IOException, ClassNotFoundException {
+//		String parameter = datareq.getParameter("packageUrl");
+//		String parameter = null;
+//		System.out.println(parameter);
+		String packageUrl = parameter.get("packageUrl").toString();
+//		StringBuilder builder = new StringBuilder();
+//		BufferedReader reader = null;
+//		try {
+//			ServletInputStream inputStreamq = request.getInputStream();
+//			if(inputStreamq != null) {
+//				reader = new BufferedReader(new InputStreamReader(inputStreamq));
+//				char[] charBuffer = new char[128];
+//				int byteRead = -1;
+//				while((byteRead = reader.read(charBuffer))> 0) {
+//					builder.append(charBuffer,0,byteRead);
+//				}
+//			}
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		} finally {
+//			if(reader != null) {
+//				reader.close();
+//				System.out.println(builder.length());
+//				parameter = builder.toString();
+//				System.out.println(parameter);
+//			}
+//		}
+//		Enumeration<String> parameterNames = request.getParameterNames();
+//		System.out.println(parameterNames);
+//		String nextElement = parameterNames.nextElement();
+//		if(!"".equals(nextElement) && nextElement != null) {
+//			System.out.println(nextElement);
+//			while(!"".equals(nextElement) && nextElement != null){
+//				nextElement = parameterNames.nextElement();
+//			}
+//		}
+//		Package pack = Package.getPackage("com.exbuilder.edu.web");
+		Class<?> forName = Class.forName(packageUrl);
+		String[] value = forName.getAnnotation(RequestMapping.class).value();
+		String join = String.join("", value);
+		List<Map<String,String>> lists = new ArrayList<Map<String,String>>();
+		Method[] methods = forName.getMethods();
+		for (Method method : methods) {
+			String name = method.getName();
+//			if(name.indexOf("List") > -1) {
+				
+				Map<String,String> paramMap = new HashMap<String, String>();
+				RequestMapping annotation = method.getAnnotation(RequestMapping.class);
+				if(annotation != null) {
+					
+					String[] mappingInfo = annotation.value();
+					if(mappingInfo.length > 0) {
+						
+						String mappingUrl = String.join("", mappingInfo);
+						paramMap.put("interfacename", name);
+						paramMap.put("classUrl", join);
+						paramMap.put("mappingUrl", mappingUrl);
+						lists.add(paramMap);
+					}
+				}
+//			}
+		}
+		OutputStream output = null;
+		StringBuffer buffer = new StringBuffer();
+		System.out.println(lists.toString());
+//		String jsonString = JSONArray.toJSONString(lists);
+		JSONObject obj = new JSONObject();
+		obj.put("list", lists);
+		String jsonString2 = obj.toJSONString();
+		System.out.println(jsonString2);
+//		System.out.println(jsonString);
+		buffer.append(jsonString2);
+		try {
+			output = response.getOutputStream();
+			output.write(buffer.toString().getBytes());
+		} finally {
+			output.flush();
+			output.close();
+			output = null;
+		}
+//		datareq.setResponse("list", lists);
+//		return new JSONDataView();
+//		Class<? extends Package> class1 = pack.getClass();
+//		System.out.println(class1);
 	}
 	@RequestMapping("/pdfhtml.do")
 	public void getHtml(HttpServletRequest request, HttpServletResponse response, DataRequest req) throws IOException {
